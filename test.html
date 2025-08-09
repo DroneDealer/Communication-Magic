@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>WORK PLEASE</title>
+  <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs-core"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs-converter"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs-backend-webgl"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@tensorflow-models/hand-pose-detection"></script>
+</head>
+<body>
+  <video id="video" autoplay playsinline muted width="640" height="480" style="display:none;"></video>
+  <canvas id="output" width="640" height="480"></canvas>
+  <canvas id="rawhands" width="640" height="480"></canvas>
+
+  <script>
+    function makeNewImg(imgname){
+      const idk = new Image()
+      idk.src = imgname
+      return idk
+    }
+
+    let height = 100
+    let width = 100
+
+
+    let imgarray = []
+    imgarray.push({ imgdata: makeNewImg("img.png"), x: 70, y: 70 , grabbed : false, distancetoanchor: 0}); //manual push
+    imgarray.push({ imgdata: makeNewImg("lostkinpfp.png"), x: 150, y: 250, grabbed : false, distancetoanchor: 0 }); //manual push
+    //distance to anchor 
+  
+    const video = document.getElementById('video');
+    const canvas = document.getElementById('output');
+    const ctx = canvas.getContext('2d');
+    // const rawctx = document.getElementById('rawhands').getContext('2d')
+    const rawctx = canvas.getContext('2d')
+
+
+    async function setupCamera() {
+      const stream = await navigator.mediaDevices.getUserMedia({ video: true });
+      video.srcObject = stream;
+      return new Promise(resolve => {
+        video.onloadedmetadata = () => resolve(video);
+      });
+    }
+
+  async function main() {
+  await setupCamera();
+  await video.play();
+
+  const model = handPoseDetection.SupportedModels.MediaPipeHands;
+  const detectorConfig = {
+    runtime: 'tfjs',
+    modelType: 'lite',
+    maxHands: 1,
+  };
+  const detector = await handPoseDetection.createDetector(model, detectorConfig);
+
+  async function detectHands() {
+    const hands = await detector.estimateHands(video, { flipHorizontal: false });
+
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+    let mindistoanchor = Number.MAX_SAFE_INTEGER
+
+    if (hands.length > 0) {
+
+      for (const hand of hands) {
+        middleknuckle = hand.keypoints[9];
+        wrist = hand.keypoints[0];
+        tip = hand.keypoints[12];
+        anchorpoint = {x: middleknuckle.x, y: (wrist.y - middleknuckle.y) /2 + middleknuckle.y}
+        let pointerknuckle = hand.keypoints[5];
+        let pinkyknuckle = hand.keypoints[17];
+        
+        imgarray.forEach(img => {
+          if (tip.y < wrist.y && tip.y > middleknuckle.y){ //upright hand case.
+            if (
+              (pinkyknuckle.x > img.x && img.x > pointerknuckle.x) ||
+              (pinkyknuckle.x < img.x && img.x < pointerknuckle.x &&
+                img.y < wrist.y && img.y > middleknuckle.y)
+            ) {
+              img.grabbed = true;
+              img.distancetoanchor = (img.x - anchorpoint.x) ** 2 + (img.y - anchorpoint.y) ** 2
+              mindistoanchor = Math.min(img.distancetoanchor, mindistoanchor)
+            }
+          } else{
+            img.grabbed = false;
+          }
+        });
+      }
+
+      imgarray.forEach(img => {
+        if (img.grabbed) {
+          if( img.distancetoanchor == mindistoanchor){
+          img.x = anchorpoint.x;
+          img.y = anchorpoint.y;
+          }else{
+            img.grabbed = false
+              console.log("not closest img", img.distancetoanchor)
+              console.log("min", mindistoanchor)
+
+          }
+
+        }
+        console.log(img.grabbed, img.imgdata.src, img.x, img.y);
+
+      });
+
+      hands.forEach(hand => {
+        hand.keypoints.forEach(kp => {
+          rawctx.beginPath();
+          rawctx.arc(kp.x, kp.y, 5, 0, 2 * Math.PI);
+          rawctx.fillStyle = 'red';
+          rawctx.fill();
+        });
+      });
+    }
+
+    imgarray.forEach(img => {
+      ctx.drawImage(img.imgdata, img.x - width / 2, img.y - height / 2, width, height);
+    });
+
+    requestAnimationFrame(detectHands);
+  }
+
+  detectHands();
+}
+
+    main();
+  </script>
+</body>
+</html>
