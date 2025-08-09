@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Shipwrecked Chat</title>
+<style>
+  * {
+    box-sizing: border-box;
+  }
+  body {
+    font-family: Arial, sans-serif;
+    margin: 20px;
+  }
+  .chat-container {
+    width: 200px;
+    height: 100vh;
+    overflow-y: auto;
+    background: #f5f5f5;
+    padding: 12px;
+    border: 1px solid #ddd;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+  .message {
+    max-width: 60%;
+    padding: 10px 15px;
+    border-radius: 12px;
+    word-wrap: break-word;
+  }
+  .human {
+    align-self: flex-start;
+    background: #d4f1f4;
+    text-align: left;
+  }
+  .villager {
+    align-self: flex-end;
+    background: #fce4ec;
+    text-align: right;
+  }
+</style>
+</head>
+<body>
+
+<div class="chat-container" id="chat">
+  <div class="message human">Testing, testing, 1 2 3!</div>
+  <div class="message villager">👋🌾</div>
+</div>
+
+<script>
+  // Auto-scroll chat container to bottom on page load
+  const chat = document.getElementById('chat');
+  chat.scrollTop = chat.scrollHeight;
+</script>
+
+</body>
+</html>
