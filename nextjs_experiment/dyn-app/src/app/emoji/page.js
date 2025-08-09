@@ -6,6 +6,8 @@ export default function EmojiKeyboard() {
   //we can toggle through the emoji categories here
   const [category, setCategory] = useState("activities");
   const [emojis, setEmojis] = useState([]);
+  const [textInput, setTextInput] = useState("");
+
   useEffect(() => {
     //based on the category
     async function loadEmojis(cat) {
@@ -27,9 +29,9 @@ export default function EmojiKeyboard() {
   }, [category]);
 
   //when a button is clicked, we handle it here based on mode
-  function handleEmojiClick(emoji) {
-    alert(`You clicked: ${emoji}`);
-  }
+    function handleEmojiClick(emoji) {
+        setTextInput((prev) => prev + emoji);
+    }
 
   //render template
   return (
@@ -76,7 +78,7 @@ export default function EmojiKeyboard() {
   style={{
     border: "1px solid #ccc",
     padding: "1rem",
-    height: "calc(100vh - 4rem)",  // fixed height same as before
+    height: "calc(100vh - 4rem)",  //fixed height same as before
     display: "flex",
     flexDirection: "column",
   }}
