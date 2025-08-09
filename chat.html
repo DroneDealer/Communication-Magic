@@ -5,11 +5,12 @@
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>Shipwrecked Chat</title>
 <style>
+    @import url('https://fonts.googleapis.com/css2?family=Poppins&display=swap');
   * {
     box-sizing: border-box;
   }
   body {
-    font-family: Arial, sans-serif;
+    font-family: 'Poppins', Arial, sans-serif;
     margin: 20px;
   }
   .chat-container {
@@ -39,20 +40,96 @@
     background: #fce4ec;
     text-align: right;
   }
+  button.play-audio {
+    background: #fefefe;
+    color: #fff8e1;
+    border: none;
+    border-radius: 8px;
+    padding: 8px 12px;
+    cursor: pointer;
+  }
+  #input-container {
+    display: flex;
+    gap: 8px;
+    padding: 5px;
+    display: flex;
+    width: 265px;
+    max-width: 100%;
+  }
+  #human-input {
+    flex-grow: 1;
+    padding: 8px;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+  }
+  #send-button {
+    padding: 8px 12px;
+    border: none;
+    border-radius: 8px;
+    background: #4caf50;
+    color: white;
+    cursor: pointer;
+  }
+  #human-input, #send-button {
+  font-family: 'Poppins', Arial, sans-serif;
+}
+
 </style>
 </head>
 <body>
 
 <div class="chat-container" id="chat">
-  <div class="message human">Testing, testing, 1 2 3!</div>
-  <div class="message villager">👋🌾</div>
+<div class="message human">Hello, villagers!</div>
+<div class="message villager">👋</div>
 </div>
-
+<div id ="input-container">
+  <input type="text" id="human-input" placeholder="Type your message..." />
+  <button id="send-button">Send</button>
 <script>
-  // Auto-scroll chat container to bottom on page load
+//   Auto-scroll chat container to bottom on page load
   const chat = document.getElementById('chat');
-  chat.scrollTop = chat.scrollHeight;
+  const input = document.getElementById('human-input');
+  const sendButton = document.getElementById('send-button');
+  const ChatMessages = [
+    { sender: 'human', content: 'Hello, villagers!' },
+    { sender: 'villager', content: '👋' }
+  ];
+  function createMessageElement(message) {
+    const div = document.createElement('div');
+    div.classList.add('message', message.sender);
+    if(message.sender === 'human'){
+        const textSpan = document.createElement('span');
+        textSpan.textContent = message.content;
+        const audioButton = document.createElement('button');
+        audioButton.textContent = '🔊';
+        audioButton.classList.add('play-audio');
+        audioButton.onclick = () => {
+            const utterance = new SpeechSynthesisUtterance(message.content);
+            speechSynthesis.speak(utterance);
+        };
+        div.appendChild(textSpan);
+        div.appendChild(audioButton);
+    } else if(message.sender === 'villager'){
+        div.textContent = message.content;
+    }
+    return div;
+  }
+  function renderMessages() {
+    chat.innerHTML = '';
+    ChatMessages.forEach(msg => {
+        const msgElement = createMessageElement(msg);
+        chat.appendChild(msgElement);
+    });
+    chat.scrollTop = chat.scrollHeight;
+  }
+  sendButton.addEventListener('click', () => {
+  const text = input.value.trim();
+  if (!text) return;
+  ChatMessages.push({ sender: 'human', content: text });
+  renderMessages();
+  input.value = '';
+  input.focus();
+  });
 </script>
-
 </body>
 </html>

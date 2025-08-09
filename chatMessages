@@ -1,0 +1,10 @@
+[
+    {
+        "sender":"Human",
+        "message":"Hello!"
+    },
+    {
+        "sender": "villager",
+        "message": "👋"
+    }
+]
