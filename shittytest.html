@@ -71,9 +71,8 @@
         anchorpoint = {x: middleknuckle.x, y: (wrist.y - middleknuckle.y) /2 + middleknuckle.y}
         let pointerknuckle = hand.keypoints[5];
         let pinkyknuckle = hand.keypoints[17];
-        
         imgarray.forEach(img => {
-          if (tip.y < wrist.y && tip.y > middleknuckle.y){ //upright hand case.
+          if (tip.y < wrist.y && tip.y > middleknuckle.y && ){ //upright hand case.
             if (
               (pinkyknuckle.x > img.x && img.x > pointerknuckle.x) ||
               (pinkyknuckle.x < img.x && img.x < pointerknuckle.x &&
@@ -83,7 +82,13 @@
               img.distancetoanchor = (img.x - anchorpoint.x) ** 2 + (img.y - anchorpoint.y) ** 2
               mindistoanchor = Math.min(img.distancetoanchor, mindistoanchor)
             }
-          } else{
+          } else if (wrist.x < tip.x && tip.x < middleknuckle.x || middleknuckle.x < tip.x && tip.x < wrist.x){
+            //left/right hand case. Check if center is between
+            if(){
+
+            }
+          }
+          else {
             img.grabbed = false;
           }
         });
