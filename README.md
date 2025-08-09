@@ -14,6 +14,6 @@ This is a responsive chat interface designed to allow communcation between indiv
 ## Gesture Tracking
 Once you’ve gotten your custom emojis from the first website, visit [link](dashing-croquembouche-8a581c.netlify.app) to use them! Here, you can upload your images and view them on the webcam, with the villagers being able to drag them wherever they want. This allows them to both use emojis and their gestures in order to communicate better. 
 Usage:
-Press upload file to upload the image and make it appear.
-Clench your fist to “grab” an image. Place the tip of your middle finger on your palm. Your hand must be in an upright position. The image will then follow your hand, so long as you move slowly.
-The image will get bigger or smaller as you move closer or further from the screen. This can be toggled off/on with the other button
+- Press upload file to upload the image and make it appear.
+- Clench your fist to “grab” an image. Place the tip of your middle finger on your palm. Your hand must be in an upright position. The image will then follow your hand, so long as you move slowly.
+- The image will get bigger or smaller as you move closer or further from the screen. This can be toggled off/on with the other button
