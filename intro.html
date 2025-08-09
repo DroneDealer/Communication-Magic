@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+        #emoji-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(50px, 1fr));
+            gap: 10px;
+            margin-top: 20px;
+        }
+        .emoji {
+            font-size: 2rem;
+            text-align: center;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+    <h1>Emoji Keyboard</h1>
+    <form>
+        <select id="emoji-select">
+            <option value="activities">activities</option>
+            <option value="animals">animals</option>
+            <option value="faces">faces</option>
+            <option value="food">food</option>
+            <option value="items">items</option>
+            <option value="nature">nature</option>
+            <option value="people">people</option>
+            <option value="place">place</option>
+            <option value="plants">plants</option>
+            <option value="symbol">symbol</option>
+        </select>
+    </form>
+
+    <div id="emoji-grid"></div>
+
+    <script>
+        const emojiSelect = document.getElementById('emoji-select');
+        const emojiGrid = document.getElementById('emoji-grid');
+
+        async function loadEmojis(category) {
+            emojiGrid.innerHTML = '';
+            try {
+                const response = await fetch(`emojis/${category}.txt`);
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                const text = await response.text();
+                Array.from(text).forEach(emoji => {
+                    if (emoji.trim() !== '') {
+                        const emojiSpan = document.createElement('span');
+                        emojiSpan.classList.add('emoji');
+                        emojiSpan.textContent = emoji;
+                        emojiGrid.appendChild(emojiSpan);
+                    }
+                });
+
+            } catch (error) {
+                console.error('Failed to load emojis:', error);
+                emojiGrid.textContent = 'Failed to load emojis.';
+            }
+        }
+
+        emojiSelect.addEventListener('change', (event) => {
+            loadEmojis(event.target.value);
+        });
+
+        if (emojiSelect.value) {
+            loadEmojis(emojiSelect.value);
+        }
+    </script>
+</body>
+</html>
