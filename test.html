@@ -24,10 +24,10 @@
 
 
     let imgarray = []
-    imgarray.push({ imgdata: makeNewImg("img.png"), x: 70, y: 70 , grabbed : false}); //manual push
-    // imgarray.push({ imgdata: makeNewImg("lostkinpfp.png"), x: 200, y: 500, grabbed : false }); //manual push
-
-
+    imgarray.push({ imgdata: makeNewImg("img.png"), x: 70, y: 70 , grabbed : false, distancetoanchor: 0}); //manual push
+    imgarray.push({ imgdata: makeNewImg("lostkinpfp.png"), x: 150, y: 250, grabbed : false, distancetoanchor: 0 }); //manual push
+    //distance to anchor 
+  
     const video = document.getElementById('video');
     const canvas = document.getElementById('output');
     const ctx = canvas.getContext('2d');
@@ -60,8 +60,10 @@
 
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+    let mindistoanchor = Number.MAX_SAFE_INTEGER
 
     if (hands.length > 0) {
+
       for (const hand of hands) {
         middleknuckle = hand.keypoints[9];
         wrist = hand.keypoints[0];
@@ -69,7 +71,6 @@
         anchorpoint = {x: middleknuckle.x, y: (wrist.y - middleknuckle.y) /2 + middleknuckle.y}
         let pointerknuckle = hand.keypoints[5];
         let pinkyknuckle = hand.keypoints[17];
-
         imgarray.forEach(img => {
           if (tip.y < wrist.y && tip.y > middleknuckle.y) {
             if (
@@ -78,6 +79,8 @@
                 img.y < wrist.y && img.y > middleknuckle.y)
             ) {
               img.grabbed = true;
+              img.distancetoanchor = (img.x - anchorpoint.x) ** 2 + (img.y - anchorpoint.y) ** 2
+              mindistoanchor = Math.min(img.distancetoanchor, mindistoanchor)
             }
           } else {
             img.grabbed = false;
@@ -87,8 +90,16 @@
 
       imgarray.forEach(img => {
         if (img.grabbed) {
+          if( img.distancetoanchor == mindistoanchor){
           img.x = anchorpoint.x;
           img.y = anchorpoint.y;
+          }else{
+            img.grabbed = false
+              console.log("not closest img", img.distancetoanchor)
+              console.log("min", mindistoanchor)
+
+          }
+
         }
         console.log(img.grabbed, img.imgdata.src, img.x, img.y);
 
