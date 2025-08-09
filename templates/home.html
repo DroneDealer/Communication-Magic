@@ -1,27 +1,10 @@
-<!DOCTYPE html>
-<html>
 <body>
-<video id="video" autoplay playsinline></video>
-<script>
-async function start() {
-    const pc = new RTCPeerConnection();
-    pc.ontrack = event => {
-        document.getElementById('video').srcObject = event.streams[0];
-    };
-
-    const offer = await pc.createOffer();
-    await pc.setLocalDescription(offer);
-
-    const response = await fetch("/offer", {
-        method: "POST",
-        headers: {"Content-Type": "application/json"},
-        body: JSON.stringify({ sdp: offer, type: "offer" })
-    });
-    const answer = await response.json();
-    await pc.setRemoteDescription(answer);
-}
-start();
-</script>
-<p>Test</p>
+<div class="container">
+    <div class="row">
+        <div class="col-lg-8  offset-lg-2">
+            <h3 class="mt-5">holy shit this works</h3>
+            <img src="{{ url_for('video_feed') }}" width="100%">
+        </div>
+    </div>
+</div>
 </body>
-</html>
